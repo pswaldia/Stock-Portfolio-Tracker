@@ -6,23 +6,23 @@ from dash.dependencies import Input,Output
 import datetime as dt
 import pandas_datareader as web
 import pandas as pd
-
+from app import app
 df=pd.read_csv('tickers.csv')
 # graph_data=web.DataReader(value,)
 
-app.layout=html.Div(
+layout=html.Div(
 [
 
 html.Div([
   html.Div([
      html.H5('Stock Comparison'),
      html.H6('Step towards deciding the Company to invest in',style=dict(color='#7F90AC')),
-     ],className="nine columns padded"),
+     ],className="ten columns padded"),
      html.Div([
        html.H1([html.Span('24'),html.Span('×',style=dict(opacity=0.5)),html.Span('7')]),
        html.H6('Stock Update')
-       ],className="three columns gs-header gs-accent-header padded",style=dict(float='right')),
-       ],style={'marginLeft':5,'marginRight':5},className="row gs-header gs-text-header"),
+       ],className="two columns gs-header gs-accent-header padded",style=dict(float='right')),
+       ],className="row gs-header gs-text-header"),
        html.Br([]),
        html.Div([
         html.Label('Select Company I:',style=dict(color='#7F90AC')),
@@ -39,7 +39,7 @@ html.Div([
  id='stock-ticker-input2',
  options=[{'label':s[0],'value':str(s[1])} for s in zip(df.Company,df.Symbol)],
  value='YHOO',multi=False
-)],style={'width':'1200','float':'left','marginBottom':20}),
+)],style={'width':'1200','float':'left','marginBottom':20,'marginLeft':20,'marginRight':20}),
 
 html.Br([]),
 
@@ -91,7 +91,9 @@ def update_graph(graph_1,graph_2):
     graph=dcc.Graph(id='graph',figure={'data':[{'x':graph_data1.Date,'y':graph_data1.Close,'name':graph_1},
                                     {'x':graph_data2.Date,'y':graph_data2.Close,'name':graph_2}
                                     ],
-                            'layout':{'title':'Comparison of two companies on the basis of closing Prices:'}
+                            'layout':{'title':'Comparison of two companies on the basis of closing Prices:'},
+                            'xaxis':{'title':'Dates'},
+                            'yaxis':{'title':'Closing Prices'}
                             })
     return graph
 

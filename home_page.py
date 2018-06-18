@@ -3,13 +3,9 @@ import dash
 from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import dash_html_components as html
-
-from plotly import graph_objs as go
-from datetime import datetime as dt
-import json
-import pandas as pd
-app=dash.Dash()
-app.layout=html.Div(
+from app import app
+# app=dash.Dash()
+layout=html.Div(
 [
 
 html.Div([
@@ -21,7 +17,7 @@ html.Div([
        html.H1([html.Span('24'),html.Span('×',style=dict(opacity=0.5)),html.Span('7')]),
        html.H6('Stock Update')
        ],className="three columns gs-header gs-accent-header padded",style=dict(float='right')),
-       ],style={'marginLeft':20,'marginRight':20},className="row gs-header gs-text-header"),
+       ],className="row gs-header gs-text-header"),
 
 
        html.Br([]),
@@ -45,7 +41,7 @@ html.Div([
        html.P("Warren Buffett,arguably the greatest investor of all time, avoids high-growth companies that fall outside his circle of competence that is, the scope of his knowledge and understanding. There's no reason you shouldn't do the same.And among the companies you are familiar with, it's usually best to compare companies that operate in the same industry. You may be familiar with both Dunkin' Brands and Apple (NASDAQ:AAPL), but it's tough to compare a restaurant chain to the world's largest technology company.",style={'fontSize': 14},className='blue-text'),
        html.P("A company's absolute stock price tells you almost nothing about how expensive the company is. It's far more useful to look at three different valuation tools: price-to-earnings ratio, or P/E; price-to-free cash flow ratio, or P/FCF; and price-to-earnings-growth ratio, or PEG. Each of these metrics is important to consider. Both P/E and P/FCF are backward-looking measurements, while the PEG ratio attempts to value a company based on how much it is expected to grow in the future.Our Site gives you all the information required to compare the Stocks of two companies, and thereby helps in deciding the company in which the investment should be made.",className='blue-text',style={'fontSize':14})
 
-], style={'marginLeft':20,'marginRight':20}),
+]),
 
 
 
@@ -54,7 +50,7 @@ html.Div([
 
 
 
-])
+], style={'marginLeft':20,'marginRight':20})
 
 
 
