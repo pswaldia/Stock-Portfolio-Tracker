@@ -26,7 +26,7 @@ layout = html.Div(children = [
          html.H1([html.Span('24'),html.Span('×',style=dict(opacity=0.5)),html.Span('7')]),
          html.H6('Stock Update')
          ],className="two columns gs-header gs-accent-header padded",style=dict(float='right')),
-         ],className="row gs-header gs-text-header"),
+         ],className="row gs-header gs-text-header",style={'paddingLeft':20}),
 
     html.Br(),
     html.Br(),
@@ -44,10 +44,11 @@ layout = html.Div(children = [
     html.Br(),
     html.Br(),
 
-    html.Div(id = 'liveprice',style = {'backgroundColor':'#34345A'},className = 'w3-card-4 '),
+    html.Div(id = 'liveprice',style = {'backgroundColor':'#34345A','paddingTop':12},className = 'w3-card-4 '),
 
     html.Br(),
     html.Div(className = 'w3-card-4',id = 'table'),
+
 
     html.Br(),
     html.Br(),
@@ -63,7 +64,7 @@ layout = html.Div(children = [
 
 
 
-],style={'marginLeft':20,'marginRight':20})
+])
 
 @app.callback(
 Output('liveprice','children'),
@@ -121,7 +122,7 @@ def make_table(n_clicks,ticker):
 
         [html.Tr(
             [html.Td(j) for j in df.values])]
-             ),className = 'w3-card-4',style = {'padding':'10px','margin':'10px','backgroundColor':'white','textAlign':'center'}))
+             ),className = 'w3-card-4',style = {'padding':'10px','margin':'10px','backgroundColor':'white','fontSize':40}))
 
     except:
         return 'Nan'

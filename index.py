@@ -6,16 +6,18 @@ from app import app
 import home_page,historical,stock_comparison,portfolio_live
 app.layout=html.Div([
 dcc.Location(id='url',refresh=False),
-html.Div(className='w3-bar w3-black w3-large sticky-top ',children=[
-dcc.Link('Home ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/home_page',style={'width':'10%'}),
-dcc.Link('Historical ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/historical',style={'width':'10%'}),
-dcc.Link('Comparison ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/stock_comparison',style={'width':'10%'}),
-dcc.Link('Live ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/portfolio_live',style={'width':'12%'}),
-dcc.Link('Prediction ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='#',style={'width':'10%'})]),
+ html.Div(className='w3-bar w3-black w3-large sticky-top ',children=[
+  dcc.Link('Home ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/home_page',style={'width':'10%'}),
+  dcc.Link('Historical ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/historical',style={'width':'10%'}),
+  dcc.Link('Comparison ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/stock_comparison',style={'width':'10%'}),
+  dcc.Link('Live ',className='w3-bar-item w3-button w3-mobile w3-padding-16',href='/portfolio_live',style={'width':'12%'})]),
+
 
 html.Div(id='page-content')
-],style={'marginLeft':20,'marginRight':20,'width':1400,'marginBottom':40 })
+],style={'marginBottom':40})
 
+
+# 'marginLeft':20,'marginRight':20,'width':1400,
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
