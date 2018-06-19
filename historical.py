@@ -31,11 +31,12 @@ layout = html.Div([
              html.H1([html.Span('24'),html.Span('×',style=dict(opacity=0.5)),html.Span('7')]),
              html.H6('Stock Update')
              ],className="two columns gs-header gs-accent-header padded",style=dict(float='right')),
-             ],className="row gs-header gs-text-header"),
+             ],className="row gs-header gs-text-header",style={'paddingLeft':20}),
 # ,style={'marginLeft':10,'marginRight':10},
         html.Br(),
         html.Br(),
         html.Br(),
+html.Div([
 
     dcc.Dropdown(
         id='stock-ticker-input',
@@ -45,6 +46,7 @@ layout = html.Div([
         multi=True
     ),
     html.Br([]),
+    html.Div([
     dcc.DatePickerRange(
     id = 'date',
     min_date_allowed=dt.datetime(1995, 8, 5),
@@ -52,9 +54,12 @@ layout = html.Div([
     stay_open_on_select = False,
     initial_visible_month=dt.datetime.now(),
     end_date = dt.datetime.now(),
-    display_format = 'Do MMM, YY'),
-
-    html.Div(id='graphs')],style={'marginLeft':20,'marginRight':20})
+    display_format = 'Do MMM, YY')
+    ],style={'marginBottom':20}),
+    html.Div(id='graphs')
+    ],style={'padding':20})
+    ])
+    # ,style={'marginLeft':20,'marginRight':20}
 # ,style={'marginLeft':5,'marginRight':5})
 
 def bbands(price, window_size=10, num_of_std=5):
@@ -66,57 +71,64 @@ def bbands(price, window_size=10, num_of_std=5):
 
 @app.callback(
     dash.dependencies.Output('graphs','children'),
-    [dash.dependencies.Input('stock-ticker-input', 'value')])
-def update_graph(tickers):
+    [dash.dependencies.Input('stock-ticker-input', 'value'),
+    dash.dependencies.Input('date','start_date'),
+    dash.dependencies.Input('date','end_date')])
+
+
+def update_graph(tickers,start_date,end_date):
     graphs = []
-    for i, ticker in enumerate(tickers):
-        try:
-            df = DataReader(str(ticker), 'morningstar',
-                            dt.datetime(2017, 1, 1),
-                            dt.datetime.now(),
-                            retry_count=0).reset_index()
-        except:
-            graphs.append(html.H3(
-                'Data is not available for {}, please retry later.'.format(ticker),
-                style={'marginTop': 20, 'marginBottom': 20}
-            ))
-            continue
+    if tickers != None:
+        for i, ticker in enumerate(tickers):
+            try:
+                if start_date != None and end_date != None:
+                    df = DataReader(str(ticker), 'morningstar',
+                                    dt.datetime.strptime(start_date,'%Y-%m-%d'),
+                                    dt.datetime.strptime(end_date,'%Y-%m-%d'),
+                                    retry_count=0).reset_index()
 
-        candlestick = {
-            'x': df['Date'],
-            'open': df['Open'],
-            'high': df['High'],
-            'low': df['Low'],
-            'close': df['Close'],
-            'type': 'candlestick',
-            'name': ticker,
-            'legendgroup': ticker,
-            'increasing': {'line': {'color': colorscale[0]}},
-            'decreasing': {'line': {'color': colorscale[1]}}
-        }
-        bb_bands = bbands(df.Close)
-        bollinger_traces = [{
-            'x': df['Date'], 'y': y,
-            'type': 'scatter', 'mode': 'lines',
-            'line': {'width': 1, 'color': colorscale[(i*2) % len(colorscale)]},
-            'hoverinfo': 'none',
-            'legendgroup': ticker,
-            'showlegend': True if i == 0 else False,
-            'name': '{} - bollinger bands'.format(ticker)
-        } for i, y in enumerate(bb_bands)]
-        graphs.append(dcc.Graph(
-            id=ticker,
-            figure={
-                'data': [candlestick] + bollinger_traces,
-                'layout': {
-                    'margin': {'b': 0, 'r': 10, 'l': 60, 't': 0},
-                    'legend': {'x': 0}
-                }
-            }
-        ))
+                    candlestick = {
+                        'x': df['Date'],
+                        'open': df['Open'],
+                        'high': df['High'],
+                        'low': df['Low'],
+                        'close': df['Close'],
+                        'type': 'candlestick',
+                        'name': ticker,
+                        'legendgroup': ticker,
+                        'increasing': {'line': {'color': colorscale[0]}},
+                        'decreasing': {'line': {'color': colorscale[1]}}
+                    }
+                    bb_bands = bbands(df.Close)
+                    bollinger_traces = [{
+                        'x': df['Date'], 'y': y,
+                        'type': 'scatter', 'mode': 'lines',
+                        'line': {'width': 1, 'color': colorscale[(i*2) % len(colorscale)]},
+                        'hoverinfo': 'none',
+                        'legendgroup': ticker,
+                        'showlegend': True if i == 0 else False,
+                        'name': '{} - bollinger bands'.format(ticker)
+                    } for i, y in enumerate(bb_bands)]
+                    graphs.append(dcc.Graph(
+                        id=ticker,
+                        figure={
+                            'data': [candlestick] + bollinger_traces,
+                            'layout': {
+                                'margin': {'b': 30, 'r': 60, 'l': 60, 't': 30},
+                                'legend': {'x': 0}
+                            }
+                        }
+                    ))
 
-    return graphs
+            except:
+                graphs.append(html.H6(
+                    'Data is not available for {}, please retry later.'.format(ticker),
+                    style={'marginTop': 20, 'marginBottom': 20}
+                ))
+                continue
 
+
+        return graphs
 
 external_css = ["https://fonts.googleapis.com/css?family=Product+Sans:400,400i,700,700i",
                 "https://cdn.rawgit.com/plotly/dash-app-stylesheets/2cc54b8c03f4126569a3440aae611bbef1d7a5dd/stylesheet.css",
