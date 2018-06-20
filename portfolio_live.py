@@ -34,7 +34,7 @@ layout = html.Div(children = [
 
 
     html.Div(style = {'margin':'10px'},children = [
-    dcc.Input(placeholder = 'Enter ticker...',type = 'text',value = 'TSLA',id = 'tickername',className = 'col-lg-3 col-sm-6 form-control ',style = {'width':'20%'}),
+    dcc.Input(placeholder = 'Enter ticker...',type = 'text',value = 'AAPL',id = 'tickername',className = 'col-lg-3 col-sm-6 form-control ',style = {'width':'20%'}),
 
     html.P('   '),
     html.Button(type = 'submit',className="btn btn-outline-primary my-2 my-sm-0 ",id='submit-button',n_clicks = 0, children='Search'),
@@ -47,7 +47,7 @@ layout = html.Div(children = [
     html.Div(id = 'liveprice',style = {'backgroundColor':'#34345A','paddingTop':12},className = 'w3-card-4 '),
 
     html.Br(),
-    html.Div(className = 'w3-card-4',id = 'table'),
+    html.Div(className = 'w3-card-4',id = 'table',style={'paddingLeft':10,'paddingRight':10}),
 
 
     html.Br(),
@@ -121,8 +121,8 @@ def make_table(n_clicks,ticker):
             )]  +
 
         [html.Tr(
-            [html.Td(j) for j in df.values])]
-             ),className = 'w3-card-4',style = {'padding':'10px','margin':'10px','backgroundColor':'white','fontSize':40}))
+            [html.Td(j) for j in df.values]
+             )],className = 'w3-card-4',style = {'paddingRight':20,'paddingLeft':20,'backgroundColor':'white','fontSize':18})))
 
     except:
         return 'Nan'
