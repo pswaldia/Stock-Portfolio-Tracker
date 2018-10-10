@@ -12,9 +12,9 @@ The following are the images of the website
 
 ![nflx](https://user-images.githubusercontent.com/36327997/42178554-7d24fc8c-7e4e-11e8-9b1e-96051183d4b7.png)
 
-# comparison : Where you can compare two companies on the basis of closing prices for a interval of time.
+# Historical : View historical data graph.
 
-![comparison](https://user-images.githubusercontent.com/36327997/42178550-794bb826-7e4e-11e8-998f-20cac052fdf1.png)
+![Imgur](https://i.imgur.com/i9LAuPF.png)
 
 
  # index.py
