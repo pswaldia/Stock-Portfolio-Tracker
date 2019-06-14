@@ -1,3 +1,10 @@
+import dash
+import os
+
+app = dash.Dash()
+server = app.server
+app.config['suppress_callback_exceptions'] = True
+
 import os
 import dash
 import requests
@@ -7,19 +14,15 @@ import dash_core_components as dcc
 import dash_html_components as html
 from bs4 import BeautifulSoup
 
-from app import app
-
-
+# from app import app
 
 colors = {'text':'#7FDBFF',
-          'background': '#111111'}
+          'background': '#1D3461'}
 
-
-
-layout = html.Div(children = [
+app.layout = html.Div(children = [
     html.Div([
     html.Div([
-       html.H5('Live Stock Prices'),
+       html.H2('Live Stock Prices'),
        html.H6('Search for live stock prices of companies',style=dict(color='#7F90AC')),
        ],className="ten columns padded"),
        html.Div([
@@ -34,7 +37,8 @@ layout = html.Div(children = [
 
 
     html.Div(style = {'margin':'10px'},children = [
-    dcc.Input(placeholder = 'Enter ticker...',type = 'text',value = 'AAPL',id = 'tickername',className = 'col-lg-3 col-sm-6 form-control ',style = {'width':'20%'}),
+    html.H6('Enter Ticker Symbol (Ex: MSFT, GOOGL, HPQ)') ,
+    dcc.Input(placeholder = 'Enter ticker: for ex: GOOGL,HPQ,MSFT etc',type = 'text',value = 'AAPL',id = 'tickername',className = 'col-lg-3 col-sm-6 form-control ',style = {'width':'30%'}),
 
     html.P('   '),
     html.Button(type = 'submit',className="btn btn-outline-primary my-2 my-sm-0 ",id='submit-button',n_clicks = 0, children='Search'),
@@ -70,17 +74,20 @@ layout = html.Div(children = [
 Output('liveprice','children'),
 [Input('submit-button','n_clicks')],
 [State('tickername','value')]
-
 )
 def update_price(n_clicks,ticker):
     try:
+###################################################################################################################     
+#                                                                                                                 #
+#              WEB SCRAPING USING BEAUTIFUL-SOUP LIBRARY , FROM YAHOO FINANCE WEBSITE                             # 
+#                                                                                                                 #
+###################################################################################################################
         url = 'https://finance.yahoo.com/quote/' + ticker
         data = requests.get(url)
         soup = BeautifulSoup(data.text,'html.parser')
         result = soup.findAll('span')
         price = result[10].text
         change = result[11].text
-
         if change[0] == '+':
             return [html.H4(str(price)  ,style = {'display':'inline-block','marginLeft':'10px','color':'white'}),
                     html.H6('  USD',style = {'display':'inline-block','padding':'10px','color':'white'}),
@@ -89,7 +96,6 @@ def update_price(n_clicks,ticker):
             return [html.H4(str(price)  ,style = {'display':'inline-block','marginLeft':'10px','color':'white'}),
                     html.H6('  USD',style = {'display':'inline-block','padding':'10px','color':'white'}),
                     html.H6(str(change),style = {'display':'inline-block','padding':'10px','color':'#ff0000'})]
-        #00ff08
     except :
         return 'NaN'
 
@@ -98,23 +104,30 @@ Output('table','children'),
 [Input('submit-button','n_clicks')],
 [State('tickername','value')])
 def make_table(n_clicks,ticker):
-
     try:
+###################################################################################################################     
+#                                                                                                                 #
+#              WEB SCRAPING USING BEAUTIFUL-SOUP LIBRARY , FROM YAHOO FINANCE WEBSITE                             # 
+#                                                                                                                 #
+###################################################################################################################
         url = 'https://finance.yahoo.com/quote/' + ticker
+
         data = requests.get(url)
+        
         soup = BeautifulSoup(data.text,'html.parser')
+        
         results=soup.findAll('td',attrs={'class':'C(black) W(51%)'})
-        results2=soup.findAll('td',attrs={'Ta(end) Fw(b) Lh(14px)'})
+        
+        results2=soup.findAll('span',attrs={'Trsdu(0.3s)'})
         records=[]
         for i in range(len(results)):
             records.append(results[i].text)
         records2=[]
         for i in range(len(results2)):
-            records2.append(results2[i].text)
+            records2.append(results2[i].text)   
         x=dict(zip(records,records2))
         df = pd.DataFrame(x,index=list(range(16))).loc[0,:]
         df.drop(df.index[2:6],inplace = True)
-
         return(html.Div(html.Table(
         [html.Tr(
             [html.Th(col) for col in df.index ]
@@ -134,6 +147,12 @@ Output('info','children'),
 [State('tickername','value')])
 def generateComponyInfo(n_clicks,ticker):
     try:
+###################################################################################################################     
+#                                                                                                                 #
+#              WEB SCRAPING USING BEAUTIFUL-SOUP LIBRARY , FROM YAHOO FINANCE WEBSITE                             # 
+#                                                                                                                 #
+###################################################################################################################
+
         url = 'https://finance.yahoo.com/quote/'+ticker+'/profile'
         data = requests.get(url)
         soup = BeautifulSoup(data.text,'html.parser')
@@ -146,24 +165,13 @@ def generateComponyInfo(n_clicks,ticker):
 
 
 
-# @app.callback(
-# Output('change','children'),
-# [Input('liveprice','children'),
-#  Input('submit-button','n_clicks')],
-# [State('tickername','value')])
-# def showChange(livePrice,n_clicks,ticker):
-#     try:
-#         url = 'https://finance.yahoo.com/quote/' + ticker
-#         data = requests.get(url)
-#         soup = BeautifulSoup(data.text,'html.parser')
-#         result = soup.findAll('span')
-#         change = result[11].text
-#         return str(change)
-#     except :
-#         return 'NaN'
-
-
 app.css.append_css({'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})
 
 app.css.append_css({'external_url':'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css'})
 app.css.append_css({'external_url': 'https://www.w3schools.com/w3css/4/w3.css'})
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+
+
