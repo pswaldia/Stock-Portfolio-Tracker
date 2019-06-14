@@ -1,7 +1,8 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-
+import dash
+import os
 import colorlover as cl
 import datetime as dt
 import flask
@@ -9,10 +10,11 @@ import os
 import pandas as pd
 from pandas_datareader.data import DataReader
 import time
-from app import app
 
-# app = dash.Dash('stock-tickers')
-# server = app.server
+
+app = dash.Dash('stock-tickers')
+server = app.server
+app.config['suppress_callback_exceptions'] = True
 
 app.scripts.config.serve_locally = False
 dcc._js_dist[0]['external_url'] = 'https://cdn.plot.ly/plotly-finance-1.28.0.min.js'
@@ -21,7 +23,7 @@ colorscale = cl.scales['9']['qual']['Paired']
 
 df_symbol = pd.read_csv('tickers.csv')
 
-layout = html.Div([
+app.layout = html.Div([
     html.Div([
     html.Div([
            html.H5('Historical Overview'),
@@ -37,30 +39,29 @@ layout = html.Div([
         html.Br(),
         html.Br(),
 html.Div([
-
+    html.H6('Enter or Select Tickers (More than one allowed)'),
     dcc.Dropdown(
         id='stock-ticker-input',
         options=[{'label': s[0], 'value': str(s[1])}
                  for s in zip(df_symbol.Company, df_symbol.Symbol)],
-        value=['YHOO', 'GOOGL'],
+        value=['GOOGL'],
         multi=True
     ),
     html.Br([]),
     html.Div([
+    html.H6('Select Date Range'),  
     dcc.DatePickerRange(
     id = 'date',
     min_date_allowed=dt.datetime(1995, 8, 5),
     max_date_allowed=dt.datetime.now(),
     stay_open_on_select = False,
     initial_visible_month=dt.datetime.now(),
-    end_date = dt.datetime.now(),
     display_format = 'Do MMM, YY')
-    ],style={'marginBottom':20}),
+    ]),
     html.Div(id='graphs')
     ],style={'padding':20})
-    ])
-    # ,style={'marginLeft':20,'marginRight':20}
-# ,style={'marginLeft':5,'marginRight':5})
+    ] )
+
 
 def bbands(price, window_size=10, num_of_std=5):
     rolling_mean = price.rolling(window=window_size).mean()
@@ -82,7 +83,7 @@ def update_graph(tickers,start_date,end_date):
         for i, ticker in enumerate(tickers):
             try:
                 if start_date != None and end_date != None:
-                    df = DataReader(str(ticker), 'morningstar',
+                    df = DataReader(str(ticker), 'yahoo',
                                     dt.datetime.strptime(start_date,'%Y-%m-%d'),
                                     dt.datetime.strptime(end_date,'%Y-%m-%d'),
                                     retry_count=0).reset_index()
